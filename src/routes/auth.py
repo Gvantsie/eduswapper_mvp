@@ -6,11 +6,12 @@ from src.main import db
 
 auth_bp = Blueprint('auth', __name__)
 
+
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
-    
+
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(username=form.username.data, email=form.email.data)
@@ -19,14 +20,15 @@ def register():
         db.session.commit()
         flash('Registration successful! Please log in.', 'success')
         return redirect(url_for('auth.login'))
-    
+
     return render_template('auth/register.html', form=form)
+
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
-    
+
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
@@ -36,8 +38,9 @@ def login():
             return redirect(next_page or url_for('main.index'))
         else:
             flash('Invalid email or password', 'danger')
-    
+
     return render_template('auth/login.html', form=form)
+
 
 @auth_bp.route('/logout')
 @login_required
@@ -45,11 +48,12 @@ def logout():
     logout_user()
     return redirect(url_for('main.index'))
 
+
 @auth_bp.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     form = ProfileForm(original_username=current_user.username, original_email=current_user.email)
-    
+
     if form.validate_on_submit():
         current_user.username = form.username.data
         current_user.email = form.email.data
@@ -63,17 +67,18 @@ def profile():
         form.email.data = current_user.email
         form.bio.data = current_user.bio
         form.location.data = current_user.location
-    
+
     education = current_user.education.all()
     experience = current_user.experience.all()
     skills_to_share = current_user.skills_to_share.all()
     skills_to_acquire = current_user.skills_to_acquire.all()
-    
-    return render_template('auth/profile.html', form=form, 
-                          education=education, 
-                          experience=experience,
-                          skills_to_share=skills_to_share,
-                          skills_to_acquire=skills_to_acquire)
+
+    return render_template('auth/profile.html', form=form,
+                           education=education,
+                           experience=experience,
+                           skills_to_share=skills_to_share,
+                           skills_to_acquire=skills_to_acquire)
+
 
 @auth_bp.route('/add_education', methods=['GET', 'POST'])
 @login_required
@@ -90,8 +95,9 @@ def add_education():
         db.session.commit()
         flash('Education added successfully!', 'success')
         return redirect(url_for('auth.profile'))
-    
+
     return render_template('auth/add_education.html', form=form)
+
 
 @auth_bp.route('/delete_education/<int:id>', methods=['POST'])
 @login_required
@@ -100,11 +106,12 @@ def delete_education(id):
     if education.user_id != current_user.id:
         flash('You do not have permission to delete this item.', 'danger')
         return redirect(url_for('auth.profile'))
-    
+
     db.session.delete(education)
     db.session.commit()
     flash('Education deleted successfully!', 'success')
     return redirect(url_for('auth.profile'))
+
 
 @auth_bp.route('/add_experience', methods=['GET', 'POST'])
 @login_required
@@ -121,8 +128,9 @@ def add_experience():
         db.session.commit()
         flash('Experience added successfully!', 'success')
         return redirect(url_for('auth.profile'))
-    
+
     return render_template('auth/add_experience.html', form=form)
+
 
 @auth_bp.route('/delete_experience/<int:id>', methods=['POST'])
 @login_required
@@ -131,11 +139,12 @@ def delete_experience(id):
     if experience.user_id != current_user.id:
         flash('You do not have permission to delete this item.', 'danger')
         return redirect(url_for('auth.profile'))
-    
+
     db.session.delete(experience)
     db.session.commit()
     flash('Experience deleted successfully!', 'success')
     return redirect(url_for('auth.profile'))
+
 
 @auth_bp.route('/add_skill_to_share', methods=['GET', 'POST'])
 @login_required
@@ -151,8 +160,9 @@ def add_skill_to_share():
         db.session.commit()
         flash('Skill to share added successfully!', 'success')
         return redirect(url_for('auth.profile'))
-    
+
     return render_template('auth/add_skill.html', form=form, skill_type='share')
+
 
 @auth_bp.route('/delete_skill_to_share/<int:id>', methods=['POST'])
 @login_required
@@ -161,11 +171,12 @@ def delete_skill_to_share(id):
     if skill.user_id != current_user.id:
         flash('You do not have permission to delete this item.', 'danger')
         return redirect(url_for('auth.profile'))
-    
+
     db.session.delete(skill)
     db.session.commit()
     flash('Skill to share deleted successfully!', 'success')
     return redirect(url_for('auth.profile'))
+
 
 @auth_bp.route('/add_skill_to_acquire', methods=['GET', 'POST'])
 @login_required
@@ -181,8 +192,9 @@ def add_skill_to_acquire():
         db.session.commit()
         flash('Skill to acquire added successfully!', 'success')
         return redirect(url_for('auth.profile'))
-    
+
     return render_template('auth/add_skill.html', form=form, skill_type='acquire')
+
 
 @auth_bp.route('/delete_skill_to_acquire/<int:id>', methods=['POST'])
 @login_required
@@ -191,7 +203,7 @@ def delete_skill_to_acquire(id):
     if skill.user_id != current_user.id:
         flash('You do not have permission to delete this item.', 'danger')
         return redirect(url_for('auth.profile'))
-    
+
     db.session.delete(skill)
     db.session.commit()
     flash('Skill to acquire deleted successfully!', 'success')
