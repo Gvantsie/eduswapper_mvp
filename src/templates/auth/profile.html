@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - EduSwapper</title>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    {% extends "base.html" %}
+    
+    {% block content %}
+    <div class="space-y-8">
+        <!-- Profile Header -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 h-32"></div>
+            <div class="px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between">
+                <div class="flex flex-col md:flex-row md:items-center">
+                    <div class="flex-shrink-0 -mt-16 md:-mt-20">
+                        <div class="h-24 w-24 md:h-32 md:w-32 rounded-full border-4 border-white bg-indigo-100 flex items-center justify-center">
+                            <span class="text-4xl font-bold text-indigo-600">{{ current_user.username[0] }}</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 md:mt-0 md:ml-6">
+                        <h1 class="text-2xl font-bold text-gray-900">{{ current_user.username }}</h1>
+                        <p class="text-gray-600">{{ current_user.email }}</p>
+                        <div class="mt-2 flex items-center text-indigo-600">
+                            <div class="flex items-center bg-indigo-100 px-3 py-1 rounded-full">
+                                <span class="font-medium">{{ current_user.token_balance }} Tokens</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Form -->
+        <div class="bg-white rounded-xl shadow-md p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Personal Information</h2>
+            <form method="POST" action="{{ url_for('auth.profile') }}">
+                {{ form.hidden_tag() }}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                        <div class="mt-1">
+                            {{ form.username(class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border") }}
+                            {% if form.username.errors %}
+                                <div class="text-red-600 text-sm mt-1">
+                                    {% for error in form.username.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                        <div class="mt-1">
+                            {{ form.email(class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border") }}
+                            {% if form.email.errors %}
+                                <div class="text-red-600 text-sm mt-1">
+                                    {% for error in form.email.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
+                    <div class="mt-1">
+                        {{ form.location(class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border") }}
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <label for="bio" class="block text-sm font-medium text-gray-700">Bio</label>
+                    <div class="mt-1">
+                        {{ form.bio(rows=4, class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border") }}
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    {{ form.submit(class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white gradient-bg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500") }}
+                </div>
+            </form>
+        </div>
+
+        <!-- Education Section -->
+        <div class="bg-white rounded-xl shadow-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">Education</h2>
+                <a href="{{ url_for('auth.add_education') }}" class="inline-flex items-center px-3 py-1.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white gradient-bg hover:bg-indigo-700 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Add Education
+                </a>
+            </div>
+            
+            {% if education %}
+                <div class="space-y-4">
+                    {% for edu in education %}
+                        <div class="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
+                            <div class="flex justify-between">
+                                <div>
+                                    <h3 class="font-medium text-gray-900">{{ edu.institution }}</h3>
+                                    <p class="text-gray-700">{{ edu.degree }}</p>
+                                    <p class="text-sm text-gray-500">{{ edu.year_range }}</p>
+                                </div>
+                                <form method="POST" action="{{ url_for('auth.delete_education', id=edu.id) }}">
+                                    <button type="submit" class="text-red-600 hover:text-red-800">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500">No education information added yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Experience Section -->
+        <div class="bg-white rounded-xl shadow-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">Experience</h2>
+                <a href="{{ url_for('auth.add_experience') }}" class="inline-flex items-center px-3 py-1.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white gradient-bg hover:bg-indigo-700 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Add Experience
+                </a>
+            </div>
+            
+            {% if experience %}
+                <div class="space-y-4">
+                    {% for exp in experience %}
+                        <div class="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
+                            <div class="flex justify-between">
+                                <div>
+                                    <h3 class="font-medium text-gray-900">{{ exp.company }}</h3>
+                                    <p class="text-gray-700">{{ exp.position }}</p>
+                                    <p class="text-sm text-gray-500">{{ exp.period }}</p>
+                                </div>
+                                <form method="POST" action="{{ url_for('auth.delete_experience', id=exp.id) }}">
+                                    <button type="submit" class="text-red-600 hover:text-red-800">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500">No experience information added yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Skills Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Skills to Share -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-gray-900">Skills to Share</h2>
+                    <a href="{{ url_for('auth.add_skill_to_share') }}" class="inline-flex items-center px-3 py-1.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white gradient-bg hover:bg-indigo-700 focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add Skill
+                    </a>
+                </div>
+                
+                {% if skills_to_share %}
+                    <div class="space-y-3">
+                        {% for skill in skills_to_share %}
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-900">{{ skill.name }}</span>
+                                <div class="flex items-center">
+                                    <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-2">
+                                        {{ skill.level }}
+                                    </span>
+                                    <form method="POST" action="{{ url_for('auth.delete_skill_to_share', id=skill.id) }}">
+                                        <button type="submit" class="text-red-600 hover:text-red-800">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-500">No skills to share added yet.</p>
+                {% endif %}
+            </div>
+
+            <!-- Skills to Acquire -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-gray-900">Skills to Acquire</h2>
+                    <a href="{{ url_for('auth.add_skill_to_acquire') }}" class="inline-flex items-center px-3 py-1.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white gradient-bg hover:bg-indigo-700 focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add Skill
+                    </a>
+                </div>
+                
+                {% if skills_to_acquire %}
+                    <div class="space-y-3">
+                        {% for skill in skills_to_acquire %}
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-900">{{ skill.name }}</span>
+                                <div class="flex items-center">
+                                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-2">
+                                        {{ skill.level }}
+                                    </span>
+                                    <form method="POST" action="{{ url_for('auth.delete_skill_to_acquire', id=skill.id) }}">
+                                        <button type="submit" class="text-red-600 hover:text-red-800">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-500">No skills to acquire added yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+</body>
+</html>
