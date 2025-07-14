@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matching - EduSwapper</title>
+    {% block head %}{% endblock %}
+</head>
+<body>
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="space-y-8">
+        <!-- Matching Header -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">Matching</h1>
+                <p class="text-gray-600">Find the best matches for your skills and interests.</p>
+            </div>
+        </div>
+
+        <!-- Matching Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {% for match in matches %}
+                <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl shadow-md p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-green-100 text-sm font-medium uppercase">{{ match.user }}</p>
+                            <h2 class="text-3xl font-bold mt-1">{{ match.shared_skills }}</h2>
+                            <h2 class="text-3xl font-bold mt-1">{{ match.acquired_skills }}</h2>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-green-100 text-sm">
+                        <span class="font-medium">Matched with {{ match.user_count }} users</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+</body>
+</html>

@@ -22,11 +22,9 @@ def create_app():
     # Configuration
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-for-eduswapper')
 
-    # Use SQLite instead of MySQL for easier local setup
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///eduswapper.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    # Initialize extensions with app
     db.init_app(app)
     login_manager.init_app(app)
 

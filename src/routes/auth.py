@@ -208,3 +208,31 @@ def delete_skill_to_acquire(id):
     db.session.commit()
     flash('Skill to acquire deleted successfully!', 'success')
     return redirect(url_for('auth.profile'))
+
+@auth_bp.route("/matching", methods=["GET"])
+@login_required
+def matching():
+    # This is a placeholder for the matching logic.
+    # In a real application, you would implement the logic to find matches based on shared skills.
+    matches = []
+    user_skills = current_user.skills_to_share.all()
+    user_acquire_skills = current_user.skills_to_acquire.all()
+    if user_skills or user_acquire_skills:
+        # Example logic: find users with at least one matching skill to share or acquire
+        for user in User.query.all():
+            if user.id != current_user.id:
+                shared_skills = set(user.skills_to_share.all()) & set(user_skills)
+                acquire_skills = set(user.skills_to_acquire.all()) & set(user_acquire_skills)
+                if shared_skills or acquire_skills:
+                    matches.append({
+                        'user': user,
+                        'shared_skills': shared_skills,
+                        'acquire_skills': acquire_skills
+                    })
+    else:
+        flash('You have no skills to share or acquire. Please add some skills to find matches.', 'info')
+    if not matches:
+        flash('No matches found based on your skills.', 'info')
+    # Render the matching page with the found matches
+    return render_template('matching.html', matches=matches)
+
