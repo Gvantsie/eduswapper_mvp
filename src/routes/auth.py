@@ -222,11 +222,10 @@ def matches():
         if other.id == user.id:
             continue
 
-        teaches = set(s.id for s in other.skills_to_share)
-        wants = set(s.id for s in other.skills_to_acquire)
-
-        my_teaches = set(s.id for s in user.skills_to_share)
-        my_wants = set(s.id for s in user.skills_to_acquire)
+        teaches = set(s.name.strip().lower() for s in other.skills_to_share)
+        wants = set(s.name.strip().lower() for s in other.skills_to_acquire)
+        my_teaches = set(s.name.strip().lower() for s in user.skills_to_share)
+        my_wants = set(s.name.strip().lower() for s in user.skills_to_acquire)
 
         # ვისგან შეიძლება ისწავლოს
         if teaches & my_wants:
