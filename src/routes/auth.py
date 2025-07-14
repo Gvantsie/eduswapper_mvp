@@ -209,30 +209,34 @@ def delete_skill_to_acquire(id):
     flash('Skill to acquire deleted successfully!', 'success')
     return redirect(url_for('auth.profile'))
 
-@auth_bp.route("/matching", methods=["GET"])
+@auth_bp.route('/matches')
 @login_required
-def matching():
-    # This is a placeholder for the matching logic.
-    # In a real application, you would implement the logic to find matches based on shared skills.
-    matches = []
-    user_skills = current_user.skills_to_share.all()
-    user_acquire_skills = current_user.skills_to_acquire.all()
-    if user_skills or user_acquire_skills:
-        # Example logic: find users with at least one matching skill to share or acquire
-        for user in User.query.all():
-            if user.id != current_user.id:
-                shared_skills = set(user.skills_to_share.all()) & set(user_skills)
-                acquire_skills = set(user.skills_to_acquire.all()) & set(user_acquire_skills)
-                if shared_skills or acquire_skills:
-                    matches.append({
-                        'user': user,
-                        'shared_skills': shared_skills,
-                        'acquire_skills': acquire_skills
-                    })
-    else:
-        flash('You have no skills to share or acquire. Please add some skills to find matches.', 'info')
-    if not matches:
-        flash('No matches found based on your skills.', 'info')
-    # Render the matching page with the found matches
-    return render_template('matching.html', matches=matches)
+def matches():
+    user = current_user
+    all_users = User.query.all()
+
+    can_learn_from = []
+    can_teach_to = []
+
+    for other in all_users:
+        if other.id == user.id:
+            continue
+
+        teaches = set(s.id for s in other.skills_to_share)
+        wants = set(s.id for s in other.skills_to_acquire)
+
+        my_teaches = set(s.id for s in user.skills_to_share)
+        my_wants = set(s.id for s in user.skills_to_acquire)
+
+        # ვისგან შეიძლება ისწავლოს
+        if teaches & my_wants:
+            can_learn_from.append(other)
+
+        # ვის შეუძლია ასწავლოს
+        if wants & my_teaches:
+            can_teach_to.append(other)
+
+
+    return render_template('matching.html', can_learn_from=can_learn_from,
+                           can_teach_to=can_teach_to)
 

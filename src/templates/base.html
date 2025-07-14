@@ -51,10 +51,9 @@
                             {% if current_user.is_authenticated %}
                             <a href="{{ url_for('auth.profile') }}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-500 hover:bg-opacity-75">Profile</a>
                             <a href="{{ url_for('main.conference') }}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-500 hover:bg-opacity-75">SwapperHub</a>
-                            <a href="{{ url_for('auth.matching') }}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-500 hover:bg-opacity-75">MatchingHub</a>
+                            <a href="{{ url_for('auth.matches') }}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-500 hover:bg-opacity-75">MatchingHub</a>
                             {% endif %}
                             <a href="{{ url_for('main.leaderboard') }}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-indigo-500 hover:bg-opacity-75">TokenBoard</a>
-
                         </div>
                     </div>
                 </div>
